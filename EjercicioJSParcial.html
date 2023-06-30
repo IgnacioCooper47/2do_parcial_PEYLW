@@ -1,0 +1,259 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--
+Design by Free CSS Templates
+http://www.freecsstemplates.org
+Released for free under a Creative Commons Attribution 2.5 License
+-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <title>Parcial JS </title>
+  <link href="default.css" rel="stylesheet" type="text/css" />
+
+  <script>
+    // Resuelva el parcial en esta seccion
+    // Ud. puede usar o no esta variable. No es obligatorio.
+    var RegistroVotantes = new Array();
+    var votantes = document.getElementById("Votantes");
+
+    function borderRed(elemento){
+    elemento.style.border = '1px solid red';
+    }
+
+    function restablecer(){
+      var candidato = document.getElementById("txCandidato");
+      var dni = document.getElementById("txDNI");
+      var sexo = document.getElementById("txSexo");
+
+      candidato.style.border = '1px solid black';
+      dni.style.border = '1px solid black';
+      sexo.style.border = '1px solid black';
+    }
+
+    function validar(){
+      var candidato = document.getElementById("txCandidato");
+      var dni = document.getElementById("txDNI");
+      var sexo = document.getElementById("txSexo");
+      var errores = true;
+
+      //Pasamos los valores a las variables.
+      var candidatoValue = candidato.value;
+      var dniValue = dni.value;
+      var sexoValue = sexo.value;
+
+      restablecer();
+
+      //Validamos que los campos no esten vacios.
+      if(candidatoValue == "" || dniValue == "" || sexoValue == ""){
+        if(candidatoValue == ""){
+          borderRed(candidato);
+        }
+        if(dniValue == ""){
+          borderRed(dni);
+        }
+        if(sexoValue == ""){
+          borderRed(sexo);
+        }
+        errores = false;
+      }
+
+      //Validamos que el candidato sea Kang, Kodos o en blanco sin importar mayusculas o minusculas.
+      if(candidatoValue.toUpperCase() != "KANG" && candidatoValue.toUpperCase() != "KODOS" && candidatoValue.toUpperCase() != "BLANCO"){
+        borderRed(candidato);
+        errores = false;
+      }
+
+      //Validamos que el DNI sea numerico.
+      if(isNaN(dniValue)){
+        borderRed(dni);
+        errores = false;
+      }
+
+      //Validamos que el sexo sea M o F sin importar mayusculas o minusculas.
+      if(sexoValue.toUpperCase() != "M" && sexoValue.toUpperCase() != "F"){
+        borderRed(sexo);
+        errores = false;
+      }
+
+      //Validamos que el DNI sea un número en un rango entre 10.000.000 y 99.999.999
+      if(dniValue < 10000000 || dniValue > 99999999){
+        borderRed(dni);
+        errores = false;
+      }
+
+      //Validamos que el DNI no este repetido.
+      for(var i = 0; i < RegistroVotantes.length; i++){
+        if(RegistroVotantes[i].dni == dniValue){
+          borderRed(dni);
+          alert("El DNI ya esta registrado. Esta persona ya emitió su voto. El fraude está mal claro que sí");
+          errores = false;
+        }
+      }
+
+      //Si no hay errores, agregamos el votante al array.
+      if(errores){
+        var votante = {
+          candidato: candidatoValue,
+          dni: dniValue,
+          sexo: sexoValue
+        }
+        RegistroVotantes.push(votante);
+        alert("Votante registrado.");
+      }
+
+      //Sumamos el voto al span correspondiente.
+      if (errores) {
+        if(candidatoValue.toUpperCase() == "KANG"){
+        var votosKang = document.getElementById("ResultadosKang");
+        votosKang.innerHTML = parseInt(votosKang.innerHTML) + 1;
+        }
+        else if(candidatoValue.toUpperCase() == "KODOS"){
+        var votosKodos = document.getElementById("ResultadosKodos");
+        votosKodos.innerHTML = parseInt(votosKodos.innerHTML) + 1;
+        }
+        else if(candidatoValue.toUpperCase() == "BLANCO"){
+        var votosBlanco = document.getElementById("ResultadosBlanco");
+        votosBlanco.innerHTML = parseInt(votosBlanco.innerHTML) + 1;
+        }
+      }
+   
+
+      //Agregar el DNI del votante al div con id Votantes, separados con "-".
+      if (errores){
+        Votantes.innerHTML += dniValue + "-";
+      }
+      
+
+      
+      //Limpiamos los campos.
+      candidato.value = "";
+      dni.value = "";
+      sexo.value = "";
+    }
+
+    function cierreMesa(){
+      var votosKang = document.getElementById("ResultadosKang");
+      var votosKodos = document.getElementById("ResultadosKodos");
+      var votosBlanco = document.getElementById("ResultadosBlanco");
+      var elementoResultado = document.getElementById("dResultados");
+      
+
+      //Mostramos los resultados en el div con id dResultados.
+      if(votosKang.innerHTML > votosKodos.innerHTML){
+        var img = document.createElement("img");
+        img.src = 'images/VoteKang.png';
+        img.style.width = '100px';
+        img.style.height = '100px';
+        elementoResultado.innerHTML = "El ganador es Kang con " + votosKang.innerHTML + " votos." + img.outerHTML;
+      }
+      if(votosKodos.innerHTML > votosKang.innerHTML){
+        var img = document.createElement("img");
+        img.src = 'images/VoteKodos.png';
+        img.style.width = '100px';
+        img.style.height = '100px';
+        elementoResultado.innerHTML = "El ganador es Kodos con " + votosKodos.innerHTML + " votos." + img.outerHTML;
+      }
+      if (votosKodos.innerHTML == votosKang.innerHTML){
+        elementoResultado.innerHTML = "Empate con " + votosKodos.innerHTML + " votos.";
+      }
+
+      
+      //Bloqueamos el uso de los botones.
+      var botonCierre = document.getElementById("cierre");
+      var botonRegistro = document.getElementById("registro");
+      botonCierre.disabled = true;
+      botonRegistro.disabled = true;
+    }
+    
+  </script>
+
+
+</head>
+
+<body>
+  <div id="header">
+    <div id="logo" style="margin-left: 15px">
+      <h1><a href="#">Programación Estática y Laboratorio Web</a></h1>
+      <h2><a href="#">Parcial JS - 27/06/2023</a></h2>
+    </div>
+  </div>
+  <div id="menu">
+    <ul>
+      <li><a href="Consigna.html">Consigna</a></li>
+      <li><a href="EjercicioJSParcial.html">HOJA Ejercicio</a></li>
+    </ul>
+  </div>
+  <div id="content">
+
+    <form id="miFormulario">
+      <table style="padding: 10px;">
+        <tr>
+          <td>Candidato:</td>
+          <td><input id="txCandidato" name="txCandidato" type="text" style="width:280px" /></td>
+        </tr>
+        <tr>
+          <td>DNI:</td>
+          <td><input id="txDNI" name="txDNI" type="text" style="width:280px" /></td>
+        </tr>
+        <tr>
+          <td>Sexo:</td>
+          <td><input id="txSexo" name="txSexo" type="text" style="width:64px" /></td>
+        </tr>
+        <tr>
+          <td>&nbsp;</td>
+          <td><input id="registro" type="button" value="Registrar" onclick="return validar();">&nbsp;<input id="cierre" type="button" value="Cierre de mesa" onclick="return cierreMesa();"></td>
+        </tr>
+
+      </table>
+    </form>
+    <p></p>
+
+    <div id="dResultados" style="display: nosne;">
+      <h2>Resultados:</h2>
+      <!-- Ingrese aquí quien gano, por cuantos votos, y su imagen-->
+    </div>
+
+
+    <div style="background-color: lightblue; border: 1px solid black;padding: 10px;">
+      <span id="ResultadosKang" style="font-size: 72px;">0</span>
+      <img src="images/VoteKang.png" height="80" style="float:right">
+
+    </div>
+    <br />
+
+    <div style="background-color: lightpink; border: 1px solid black;padding: 10px;">
+      <span id="ResultadosKodos" style="font-size: 72px;">0</span>
+      <img src="images/VoteKodos.png" height="80" style="float:right">
+
+    </div>
+    <br />
+
+    <div style="padding: 10px;">
+      <span style="font-size: 36px;">En Blanco: </span> <span id="ResultadosBlanco" style="font-size: 36px;">0</span>
+    </div>
+
+    <br />
+
+    Votantes:
+    <div id="Votantes" style="border: 1px solid black;padding: 10px;">
+
+
+    </div>
+
+
+    </table>
+
+  </div>
+  <div id="footer" style="margin-top: 240px;">
+    <p id="legal">Copyright &copy; AtomoHost. All Rights Reserved.
+      Designed by <a href="http://www.freecsstemplates.org/">Free CSS
+        Templates</a>.</p>
+    <p id="links"><a href="#">Privacy Policy</a> | <a href="#">Terms
+        of Use</a></p>
+  </div>
+  <br />
+  <br />
+</body>
+
+</html>
